@@ -4,8 +4,9 @@ scriptencoding utf-8
 
 " 行番号表示
 set number
-" 行、列番号をハイライト
+" 行を強調表示
 set cursorline
+" 列を強調表示
 set cursorcolumn
 " ウィンドウの最後の行をできる限り表示
 set display=lastline
@@ -22,9 +23,9 @@ set list
 set listchars=tab:▸-
 " <TAB>入力を複数の空白入力に置き換える
 set expandtab
-" 入力した<TAB>を空白に変換する文字数
+" 入力した<TAB>を変換する空白の文字数
 set softtabstop=4
-" 読み込んだ<TAB>を空白に変換する文字数
+" 読み込んだ<TAB>を変換する空白の文字数
 set tabstop=4
 
 
@@ -44,14 +45,19 @@ set wrapscan
 set hlsearch
 
 " キーバインド
+let mapleader = "\ "
+nnoremap <Leader>w :w<CR>
 inoremap <silent> jj  <esc>
 nnoremap Y y$
+nnoremap <C-c> :close
+nnoremap <Leader>c :<C-u>setlocal cursorline! cursorcolumn!<CR>
 
-" キーバインド ブラグイン
+" neosnipped
 imap <C-k> <Plug>(neosnippet_expand_or_jump)
 smap <C-k> <Plug>(neosnippet_expand_or_jump)
 xmap <C-k> <Plug>(neosnippet_expand_target)
-nnoremap <silent><C-e> :NERDTreeToggle <CR>
+" NERdTree
+nnoremap <silent> <Leader>e :NERDTreeToggle <CR>
 
 " SuperTab like snippets behavior.
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
