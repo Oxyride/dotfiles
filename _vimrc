@@ -28,7 +28,6 @@ set softtabstop=4
 " 読み込んだ<TAB>を変換する空白の文字数
 set tabstop=4
 
-
 " 対応する括弧にカーソルを一瞬移動
 set showmatch
 " showmatchする時間
@@ -49,88 +48,77 @@ let mapleader = "\ "
 nnoremap <Leader>w :w<CR>
 inoremap <silent> jj  <esc>
 nnoremap Y y$
-nnoremap <C-c> :close
 nnoremap <Leader>c :<C-u>setlocal cursorline! cursorcolumn!<CR>
 
-" neosnipped
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-" NERdTree
+" NERDTree
 nnoremap <silent> <Leader>e :NERDTreeToggle <CR>
+"----------------------------------------------------------------------
+" NeoSnippet 
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: pumvisible() ? "\<C-n>" : "\<TAB>"
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: "\<TAB>"
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
-function! CPPCodeCleanup()
-  " echo "Cleanup cpp code"
-  let l:lines="all"
-  let g:clang_format_fallback_style = 'Google'
-  :pyf /usr/local/share/clang/clang-format.py
-endfunction
-command! CPPCodeCleanup call CPPCodeCleanup()
-
-autocmd BufWrite *.{cpp} :CPPCodeCleanup
-autocmd BufWrite *.{hpp} :CPPCodeCleanup
-autocmd BufWrite *.{c} :CPPCodeCleanup
-autocmd BufWrite *.{h} :CPPCodeCleanup
-
-" For snippet_complete marker.
+" For conceal markers.
 if has('conceal')
-  set conceallevel=2 concealcursor=i
+  set conceallevel=2 concealcursor=niv
 endif
 
-" Note: Skip initialization for vim-tiny or vim-small.
-if 0 | endif
+" ---------------------------------------------------------------------
+"dein.vim
+if &compatible
+  set nocompatible               " Be iMproved
+endif
 
-filetype off
+" Required:
+set runtimepath+=/Users/oxyride/.cache/dein/repos/github.com/Shougo/dein.vim
 
-if has('vim_starting')
-  if &compatible
-    set nocompatible               " Be iMproved
+" Required:
+if dein#load_state('/Users/oxyride/.cache/dein')
+  call dein#begin('/Users/oxyride/.cache/dein')
+
+  " Let dein manage dein
+  " Required:
+  call dein#add('/Users/oxyride/.cache/dein/repos/github.com/Shougo/dein.vim')
+
+  " Add or remove your plugins here like this:
+  call dein#add('Shougo/deoplete.nvim')
+  if !has('nvim')
+    call dein#add('roxma/nvim-yarp')
+    call dein#add('roxma/vim-hug-neovim-rpc')
   endif
+  let g:deoplete#enable_at_startup = 1
 
-  set runtimepath+=~/.vim/bundle/neobundle.vim
+  call dein#add('Shougo/neosnippet.vim')
+  call dein#add('Shougo/neosnippet-snippets')
+  call dein#add('Shougo/unite.vim')
+  call dein#add('cohama/lexima.vim')
+  call dein#add('scrooloose/nerdtree') 
+  call dein#add('nathanaelkane/vim-indent-guides')
+  call dein#add('altercation/vim-colors-solarized')
+  " Required:
+  call dein#end()
+  call dein#save_state()
 endif
 
-call neobundle#begin(expand('~/.vim/bundle/'))
+" Required:
+filetype plugin indent on
+syntax enable
 
-" originalrepos on github
-NeoBundle 'Shougo/neobundle.vim'
-NeoBundle 'Shougo/vimproc', {
-  \ 'build' : {
-    \ 'windows' : 'make -f make_mingw32.mak',
-    \ 'cygwin' : 'make -f make_cygwin.mak',
-    \ 'mac' : 'make -f make_mac.mak',
-    \ 'unix' : 'make -f make_unix.mak',
-  \ },
-  \ }
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'cohama/lexima.vim'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'thinca/vim-quickrun'
-let g:quickrun_config = {'*': {'hook/time/enable': '1'},}
-" colorscheme
-NeoBundle 'altercation/vim-colors-solarized'
-""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
-
-call neobundle#end()
-
-filetype plugin indent on     " required!
-filetype indent on
-syntax on
+" If you want to install not installed plugins on startup.
+"if dein#check_install()
+"  call dein#install()
+"endif
 
 " カラーテーマ
 set background=dark
 colorscheme solarized
-
-NeoBundleCheck
