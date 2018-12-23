@@ -27,17 +27,17 @@ if dein#load_state('/Users/oxyride/.cache/dein')
   endif
   let g:deoplete#enable_at_startup = 1
 
-  call dein#add('Shougo/neosnippet.vim')                  "コード補完
+  call dein#add('Shougo/neosnippet.vim')               "コード補完
   call dein#add('Shougo/neosnippet-snippets')
   call dein#add('Shougo/unite.vim')
-  call dein#add('scrooloose/syntastic')                   "構文エラーチェック
-  call dein#add('cohama/lexima.vim')                      "括弧補完
-  call dein#add('scrooloose/nerdtree')                    "ディレクトリをツリー表示
-  call dein#add('itchyny/lightline.vim')                  "ステータスラインの表示内容強化
-  call dein#add('bronson/vim-trailing-whitespace')        "末尾の全角と半角の空白文字を赤くハイライト
-  call dein#add('Yggdroot/indentLine')                    "インデント可視化
+  call dein#add('scrooloose/syntastic')                "構文エラーチェック
+  call dein#add('cohama/lexima.vim')                   "括弧補完
+  call dein#add('scrooloose/nerdtree')                 "ディレクトリをツリー表示
+  call dein#add('itchyny/lightline.vim')               "ステータスラインの表示内容強化
+  call dein#add('bronson/vim-trailing-whitespace')     "末尾の全角と半角の空白文字を赤くハイライト
+  call dein#add('Yggdroot/indentLine')                 "インデント可視化
   call dein#add('nathanaelkane/vim-indent-guides')
-  call dein#add('altercation/vim-colors-solarized')       "カラーテーマ
+  call dein#add('altercation/vim-colors-solarized')    "カラーテーマ
   " Required:
   call dein#end()
   call dein#save_state()
