@@ -1,5 +1,6 @@
-set encoding=utf-8
-scriptencoding utf-8
+set encoding=utf-8 " バッファ内のエンコード
+set fileencoding=utf-8 " ファイル書き込み時のエンコード
+scriptencoding utf-8 " Vim Scriptで使用するエンコード
 
 "----------------------------------------------------------------------
 " dein.vim プラグイン管理
@@ -26,18 +27,18 @@ if dein#load_state('/Users/oxyride/.cache/dein')
     call dein#add('roxma/vim-hug-neovim-rpc')
   endif
   let g:deoplete#enable_at_startup = 1
-
-  call dein#add('Shougo/neosnippet.vim')               "コード補完
+  call dein#add('Shougo/neocomplete.vim')              " コード自動補完
+  call dein#add('Shougo/neosnippet.vim')               " スニペット
   call dein#add('Shougo/neosnippet-snippets')
-  call dein#add('Shougo/unite.vim')
-  call dein#add('scrooloose/syntastic')                "構文エラーチェック
-  call dein#add('cohama/lexima.vim')                   "括弧補完
-  call dein#add('scrooloose/nerdtree')                 "ディレクトリをツリー表示
-  call dein#add('itchyny/lightline.vim')               "ステータスラインの表示内容強化
-  call dein#add('bronson/vim-trailing-whitespace')     "末尾の全角と半角の空白文字を赤くハイライト
-  call dein#add('Yggdroot/indentLine')                 "インデント可視化
-  call dein#add('nathanaelkane/vim-indent-guides')
-  call dein#add('altercation/vim-colors-solarized')    "カラーテーマ
+  call dein#add('scrooloose/syntastic')                " 構文エラーチェック
+  call dein#add('cohama/lexima.vim')                   " 括弧補完
+  call dein#add('tomtom/tcomment_vim')                 " コメントON/OFF切り替え
+  call dein#add('scrooloose/nerdtree')                 " ディレクトリをツリー表示
+  call dein#add('itchyny/lightline.vim')               " ステータスラインの表示内容強化
+  call dein#add('bronson/vim-trailing-whitespace')     " 末尾の全角と半角の空白文字を赤くハイライト
+  call dein#add('nathanaelkane/vim-indent-guides')     " インデント可視化
+  call dein#add('christoomey/vim-tmux-navigator')      " tmuxとvimのペイン操作を統一
+  call dein#add('altercation/vim-colors-solarized')    " カラーテーマ
   " Required:
   call dein#end()
   call dein#save_state()
@@ -58,17 +59,19 @@ syntax enable
 " 改行時に前の行のインデントを継続
 set autoindent
 " 自動インデントでずれる幅
-set shiftwidth=4
+set shiftwidth=2
 " 改行時に入力された行の末尾に合わせて次の行のインデントを増減
 set smartindent
+
+" <TAB>入力を複数の空白入力に置き換える
+set expandtab " 入力した<TAB>を変換する空白の文字数
+set softtabstop=2
+" <TAB>を含むファイルを開いた際、<TAB>を変化感した際の空白の文字数
+set tabstop=2
 
 " 不可視文字を可視化
 set list
 set listchars=tab:▸-
-" <TAB>入力を複数の空白入力に置き換える
-set expandtab
-" 入力した<TAB>を変換する空白の文字数
-set softtabstop=4
 
 "----------------------------------------------------------------------
 " 括弧/タグ
@@ -103,6 +106,12 @@ nnoremap <Leader>w :w <CR>
 inoremap <silent> jj  <esc>
 nnoremap Y y$
 
+" ノーマルモード時';'と':'を入れ替え
+if has("mac")
+  nnoremap ; :
+  nnoremap : ;
+endif
+
 " NERDTree
 nnoremap <silent> <Leader>e :NERDTreeToggle <CR>
 
@@ -132,21 +141,85 @@ set backspace=indent,eol,start
 "----------------------------------------------------------------------
 " ステータスラインの設定
 "----------------------------------------------------------------------
-set laststatus=2 " ステータスラインを常に表示
-set showmode " 現在のモードを表示
-set showcmd " 打ったコマンドをステータスラインの下に表示
-set ruler " ステータスラインの右側にカーソルの現在位置を表示する
+" ステータスラインを常に表示
+set laststatus=2
+" 現在のモードを表示
+set showmode
 
 "----------------------------------------------------------------------
-" neosnippetの設定
+" Neocompleteの設定
 "----------------------------------------------------------------------
-" キーバインド
+" neocompleteをvim起動時に有効化.
+let g:neocomplete#enable_at_startup = 1
+" smartcase有効化
+let g:neocomplete#enable_smart_case = 1
+" シンタックスをキャッシュするときの最小文字数
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+
+" ディクショナリの設定
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+    \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+  let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" キーマッピング
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+"----------------------------------------------------------------------
+" NeoSnippetの設定
+"----------------------------------------------------------------------
+" キーマッピング
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 
-" SuperTab like snippets behavior.
+" 補完入力候補を<TAB>で選択
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 "imap <expr><TAB>
 " \ pumvisible() ? "\<C-n>" :
@@ -163,19 +236,64 @@ endif
 "----------------------------------------------------------------------
 " Syntasticの設定
 "----------------------------------------------------------------------
-" 構文エラー行に「>>」を表示
+" 構文エラー行にシンボルを表示
 let g:syntastic_enable_signs = 1
 " 他のVimプラグインと競合するのを防ぐ
 let g:syntastic_always_populate_loc_list = 1
-" syntastic有効化
-let g:syntastic_mode_map = {'mode': 'passive'}
 " 構文エラーリストを非表示
 let g:syntastic_auto_loc_list = 0
 " ファイルを開いた時に構文エラーチェックを実行する
 let g:syntastic_check_on_open = 1
 " 「:wq」で終了する時も構文エラーチェックする
-let g:syntastic_check_on_wq = 1
+let g:syntastic_check_on_wq = 0
+" エラーシンボル設定
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+let g:syntastic_style_error_symbol = '✗'
+let g:syntastic_style_warning_symbol = '⚠'
+
+" ステータスラインにメッセージを表示
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+" 自動チェックする言語を設定
+let g:syntastic_mode_map = {
+    \ 'mode': 'passive',
+    \ 'active_filetypes': ['python']
+    \}
 
 " 言語毎の規約指定
 let g:syntastic_javascript_checkers=['eslint']
 let g:syntastic_python_checkers = ['pylint']
+
+"----------------------------------------------------------------------
+" VimIndentGuide 設定
+"----------------------------------------------------------------------
+" vim-indent-duitesをvim起動時に有効化
+let g:indent_guides_enable_on_vim_startup = 1
+" ガイドをスタートするインデントの量
+let g:indent_guides_start_level = 2
+" 無効にするファイル
+let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+
+" 奇数行と偶数行の色を設定
+let g:indent_guides_auto_colors = 0
+" 奇数インデントのカラー
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=24
+" 偶数インデントのカラー
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=22
+" 可視化領域のサイズ
+let g:indent_guides_guide_size = 1
+
+"----------------------------------------------------------------------
+" Vim Tmux Navigator
+"----------------------------------------------------------------------
+" <Leader>移動キーを Vim Tmux Navigator に移譲する
+nnoremap <silent> <C-w>h :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-w>j :TmuxNavigateDown<cr>
+nnoremap <silent> <C-w>k :TmuxNavigateUp<cr>
+nnoremap <silent> <C-w>l :TmuxNavigateRight<cr>
+nnoremap <silent> <C-w>\\ :TmuxNavigatePrevious<cr>
+
+"----------------------------------------------------------------------
