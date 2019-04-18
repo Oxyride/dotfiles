@@ -1,4 +1,4 @@
-set encoding=utf-8     " バッファ内のエンコード
+:set encoding=utf-8     " バッファ内のエンコード
 set fileencoding=utf-8 " ファイル書き込み時のエンコード
 scriptencoding utf-8   " Vim Scriptで使用するエンコード
 
@@ -77,10 +77,9 @@ nnoremap <Leader>w :w <CR>
 nnoremap <Leader>s :wq <CR>
 
 " ノーマルモード時';'と':'を入れ替え
-if has("mac")
-  nnoremap ; :
-  nnoremap : ;
-endif
+nnoremap ; :
+nnoremap : ;
+
 " ファイル名のタブ補完
 set wildmenu
 set wildmode=list:longest
