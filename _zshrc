@@ -22,6 +22,9 @@ select-word-style default
 #---------------------------------------------------------------------
 export PATH=/usr/local:$PATH
 
+# node path
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
 #---------------------------------------------------------------------
 # 補完
 #---------------------------------------------------------------------
@@ -132,8 +135,6 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 alias mkdir='mkdir -p'
-alias diff="coloddiff"
-alias python='python3'
 
 # tmuxコマンド
 alias tksv='tmux kill-server'
@@ -148,7 +149,7 @@ alias ts='Volumes/Transcend'
 alias swpl='/Applications/SWI-Prolog.app/Contents/MacOS/swipl'
 alias mathematica='open -a /Applications/Mathematica.app'
 alias vs='open -a /Applications/Visual\ Studio\ Code.app'
-
+alias dr='docker run -it -p 8888:8888 -v $(pwd)/data:/data --rm'
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
