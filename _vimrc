@@ -20,6 +20,7 @@ if dein#load_state('/Users/oxyride/.cache/dein')
   " Required:
   call dein#add('/Users/oxyride/.cache/dein/repos/github.com/Shougo/dein.vim')
 
+  "test
   " Add or remove your plugins here like this:
   call dein#add('Shougo/deoplete.nvim')
  if !has('nvim')
