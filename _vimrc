@@ -356,6 +356,7 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=22
 " 可視化領域のサイズ
 let g:indent_guides_guide_size = 1
 
+
 "----------------------------------------------------------------------
 " Vim Tmux Navigatorの設定
 "----------------------------------------------------------------------
